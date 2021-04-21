@@ -1,10 +1,17 @@
-turtles-own [wealth]
+turtles-own [wealth job wage job-duration]
+globals [max-wealth]
+
+undirected-link-breed [friendships friendship]
+friendships-own [strength duration]
 
 to setup
   clear-all
+  set max-wealth 100
   create-turtles number [
-    set wealth 100
+    set wealth 50
+    set wage random 3
     setxy wealth random-ycor
+    set job random 2
     set shape "person"
     set size 2
   ]
@@ -13,14 +20,116 @@ to setup
 end
 
 
-
-
-
 to go
-  ask turtles with [ wealth > 0] [ transact]
-  ask turtles  [ if wealth <= max-pxcor [ set xcor wealth ]]
+  check-job-status
+  check-job-loss
+  find-job
+  apply-expenses
+  update-friendships
+  ask turtles  [
+    if wealth <= max-pxcor [ set xcor wealth ]
+    if wealth = 0 [ set xcor 0]
+
+  ]
   tick
 end
+
+to update-friendships
+  ask friendships [
+
+    if strength = 0 [die]
+
+    if strength > 0[ set strength strength - 1]
+
+    set duration duration + 1
+  ]
+end
+
+to check-job-loss
+ ask turtles [
+    if random 100 < job-loss-rate [
+    set job 0
+    set color yellow
+    ]
+  ]
+end
+
+to find-job
+ask turtles [
+    if job = 0[
+      if random 100 < job-find-rate [
+        set job 1
+        set wage random 7
+        set color blue
+      ]
+    ]
+
+    if job = 0 [
+
+
+      let a-friend-with-a-job one-of other in-friendship-neighbors with [wealth > 70]
+
+       if a-friend-with-a-job != nobody[
+        if random 100 < job-request-rate [
+          set job 1
+          set wage [wage] of a-friend-with-a-job
+          set color blue
+        ]
+       ]
+
+     ;; ask for a job
+
+
+    ]
+  ]
+
+end
+
+
+to apply-expenses
+  ask turtles [
+    if wealth - expense-rate > 0 [
+      set wealth wealth - expense-rate
+    ]
+
+    if wealth < 10 [ set color red ]
+    if wealth > 90 [ set color green ]
+  ]
+end
+
+
+to check-job-status
+  ask turtles
+  [
+    if job > 0 [
+    if wealth + wage < max-pxcor [
+        earn]
+
+    set job-duration job-duration + 1
+
+     if job-duration > 5 [
+
+        let potential-friend one-of other turtles with [job-duration > 5]
+
+        if potential-friend != nobody[
+           if random 100 < friendship-creation-rate [
+
+          create-friendship-with potential-friend [ set strength random 5 set duration 0]
+          ]
+
+        ]
+       ]
+
+
+    ]
+  ]
+end
+
+to earn
+   if wealth + wage < max-wealth [
+    set wealth wealth + wage ]
+end
+
 
 to transact
   set wealth wealth - 1
@@ -37,13 +146,13 @@ to-report bottom-50-pct
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+180
 10
-719
-520
+867
+698
 -1
 -1
-1.0
+6.723
 1
 10
 1
@@ -54,9 +163,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-500
+100
 0
-500
+100
 0
 0
 1
@@ -64,10 +173,10 @@ ticks
 30.0
 
 BUTTON
-37
-70
-100
-103
+0
+10
+63
+43
 NIL
 setup
 NIL
@@ -81,9 +190,9 @@ NIL
 1
 
 BUTTON
-137
+66
 10
-200
+129
 43
 NIL
 go
@@ -98,78 +207,130 @@ NIL
 1
 
 SLIDER
-4
-169
-176
-202
+0
+51
+172
+84
 number
 number
 0
-500
-382.0
+1000
+503.0
 1
 1
 NIL
 HORIZONTAL
 
-MONITOR
-726
-10
-798
-55
-NIL
-top-10-pct
-17
-1
-11
-
-MONITOR
-723
-62
-799
-107
-NIL
-bottom-50-pct
-17
-1
-11
-
 PLOT
-810
-10
-1217
-160
-wealth by percent
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-true
-"" ""
-PENS
-"top 10" 1.0 0 -16777216 true "" "plot top-10-pct"
-"bottom 50" 1.0 0 -2674135 true "" "plot bottom-50-pct"
-
-PLOT
-725
-178
-1217
-328
-wealth dist
+0
+313
+180
+463
+Distribution of Wealth
 wealth
-turtles
+workers
 0.0
-500.0
+100.0
 0.0
-40.0
+50.0
 true
-true
+false
 "" ""
 PENS
-"default" 5.0 1 -14439633 true "" "set-plot-y-range 0 50 \nhistogram [wealth] of turtles"
+"default" 5.0 1 -15040220 true "" "set-plot-y-range 0 100\nhistogram [wealth] of turtles"
+
+SLIDER
+0
+121
+172
+154
+job-loss-rate
+job-loss-rate
+0
+50
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+0
+156
+172
+189
+job-find-rate
+job-find-rate
+0
+25
+7.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+0
+194
+172
+227
+expense-rate
+expense-rate
+0
+20
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+0
+238
+172
+271
+job-request-rate
+job-request-rate
+0
+100
+29.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+0
+278
+181
+311
+friendship-creation-rate
+friendship-creation-rate
+0
+100
+59.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+0
+467
+179
+617
+Unemployment
+rate
+time
+0.0
+100.0
+0.0
+25.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles with [job = 0]"
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -517,15 +678,6 @@ NetLogo 6.2.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
-<experiments>
-  <experiment name="Simple Economy Experiment" repetitions="10" runMetricsEveryStep="false">
-    <setup>setup</setup>
-    <go>go</go>
-    <timeLimit steps="10000"/>
-    <metric>top-10-pct</metric>
-    <metric>bottom-50-pct</metric>
-  </experiment>
-</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
