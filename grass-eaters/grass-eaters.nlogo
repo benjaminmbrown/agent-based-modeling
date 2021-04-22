@@ -1,158 +1,81 @@
-turtles-own [wealth job wage job-duration]
-globals [max-wealth]
+turtles-own [energy]
 
-undirected-link-breed [friendships friendship]
-friendships-own [strength duration]
 
 to setup
   clear-all
-  set max-wealth 100
   create-turtles number [
-    set wealth 50
-    set wage random 3
-    setxy wealth random-ycor
-    set job random 2
+    setxy random-xcor random-ycor
     set shape "person"
-    set size 2
   ]
-
+  create-patches
   reset-ticks
 end
 
 
 to go
-  check-job-status
-  check-job-loss
-  find-job
-  apply-expenses
-  update-friendships
-  ask turtles  [
-    if wealth <= max-pxcor [ set xcor wealth ]
-    if wealth = 0 [ set xcor 0]
-
-  ]
+  if ticks >= 1500 [stop]
+  move-turtles
+  eat-grass
+  reproduce
+  check-death
+  regrow-grass
   tick
 end
 
-to update-friendships
-  ask friendships [
-
-    if strength = 0 [die]
-
-    if strength > 0[ set strength strength - 1]
-
-    set duration duration + 1
-  ]
-end
-
-to check-job-loss
- ask turtles [
-    if random 100 < job-loss-rate [
-    set job 0
-    set color yellow
-    ]
-  ]
-end
-
-to find-job
-ask turtles [
-    if job = 0[
-      if random 100 < job-find-rate [
-        set job 1
-        set wage random
-        set color blue
-      ]
-    ]
-
-    if job = 0 [
-
-
-      let a-friend-with-a-job one-of other in-friendship-neighbors with [wealth > 70]
-
-       if a-friend-with-a-job != nobody[
-        if random 100 < job-request-rate [
-          set job 1
-          set wage [wage] of a-friend-with-a-job
-          set color blue
-        ]
-       ]
-
-     ;; ask for a job
-
-
-    ]
-  ]
-
-end
-
-
-to apply-expenses
+to move-turtles
   ask turtles [
-    if wealth - expense-rate > 0 [
-      set wealth wealth - expense-rate
-    ]
-
-    if wealth < 10 [ set color red ]
-    if wealth > 90 [ set color green ]
+    right random 360
+    forward 1
+    set energy energy - 1
   ]
 end
 
+to create-patches
+  ask patches [ set pcolor green]
+end
 
-to check-job-status
-  ask turtles
-  [
-    if job > 0 [
-    if wealth + wage < max-pxcor [
-        earn]
-
-    set job-duration job-duration + 1
-
-     if job-duration > 5 [
-
-        let potential-friend one-of other turtles with [job-duration > 5]
-
-        if potential-friend != nobody[
-           if random 100 < friendship-creation-rate [
-
-          create-friendship-with potential-friend [ set strength random 5 set duration 0]
-          ]
-
-        ]
-       ]
-
-
+to eat-grass
+  ask turtles [
+    if pcolor = green [
+      set pcolor black
+      set energy energy + energy-from-grass
     ]
+    ifelse show-energy?
+    [set label energy]
+    [set label ""]
   ]
 end
 
-to earn
-   if wealth + wage < max-wealth [
-    set wealth wealth + wage ]
-end
-
-
-to transact
-  set wealth wealth - 1
-  ask one-of other turtles [ set wealth wealth + 1]
+to reproduce
+  ask turtles[
+   if energy > birth-energy [
+     set energy energy - birth-energy
+      hatch 1 [ set energy birth-energy]
+    ]
+  ]
 
 end
 
-to-report top-10-pct
-  report sum [wealth] of max-n-of (count turtles * 0.10) turtles [wealth]
+to check-death
+  ask turtles [
+    if energy <= 0 [die]
+  ]
 end
 
-to-report bottom-50-pct
-  report sum [wealth] of min-n-of (count turtles * 0.50) turtles [wealth]
+to regrow-grass
+ ask patches [
+    if random 100 < 3 [set pcolor green]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-180
+167
 10
-867
-698
+604
+448
 -1
 -1
-6.723
+13.0
 1
 10
 1
@@ -162,12 +85,12 @@ GRAPHICS-WINDOW
 0
 0
 1
-0
-100
-0
-100
-0
-0
+-16
+16
+-16
+16
+1
+1
 1
 ticks
 30.0
@@ -190,9 +113,9 @@ NIL
 1
 
 BUTTON
-66
+75
 10
-129
+138
 43
 NIL
 go
@@ -204,133 +127,104 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
-SLIDER
-0
-51
-172
-84
-number
-number
-0
-1000
-503.0
-1
-1
+MONITOR
+609
+164
+687
+209
 NIL
-HORIZONTAL
+count turtles
+17
+1
+11
+
+MONITOR
+607
+224
+819
+269
+NIL
+count patches with [pcolor = green]
+17
+1
+11
+
+SWITCH
+0
+49
+134
+82
+show-energy?
+show-energy?
+0
+1
+-1000
 
 PLOT
-0
-313
-180
-463
-Distribution of Wealth
-wealth
-workers
-0.0
-100.0
-0.0
-50.0
-true
-false
-"" ""
-PENS
-"default" 5.0 1 -15040220 true "" "set-plot-y-range 0 100\nhistogram [wealth] of turtles"
-
-SLIDER
-0
-121
-172
-154
-job-loss-rate
-job-loss-rate
-0
-50
-3.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-0
-156
-172
-189
-job-find-rate
-job-find-rate
-0
-25
-7.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-0
-194
-172
-227
-expense-rate
-expense-rate
-0
-20
-3.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-0
-238
-172
-271
-job-request-rate
-job-request-rate
-0
-100
-29.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-0
-278
-181
-311
-friendship-creation-rate
-friendship-creation-rate
-0
-100
-59.0
-1
-1
-NIL
-HORIZONTAL
-
-PLOT
-0
-467
-179
-617
-Unemployment
-rate
+607
+10
+807
+160
+Totals
 time
+totals
 0.0
-100.0
+10.0
 0.0
-25.0
+10.0
 true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles with [job = 0]"
+"turtles" 1.0 0 -16777216 true "" "plot count turtles"
+"grass" 1.0 0 -7500403 true "" "plot count patches with [pcolor = green]"
+
+SLIDER
+0
+80
+172
+113
+number
+number
+0
+100
+13.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+0
+111
+172
+144
+energy-from-grass
+energy-from-grass
+0
+100
+4.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+0
+147
+172
+180
+birth-energy
+birth-energy
+0
+100
+55.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
