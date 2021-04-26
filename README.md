@@ -21,6 +21,18 @@ Part of NetLogo training the task was to create a simulation to see what happens
 * Social connections are labeled with links
 
 
+## Heroes and Cowards ABM
+
+[Heroes and Cowards ](./heroes-cowards/heroes-cowards.png)
+
+Recreating the Heroes And Cowards Activity as an ABM
+
+* Each agent is either a hero or a coward
+* Each agent selects one other agent to be his friend, and another agent to be his enemy
+* If an agent is a hero, he will attempt to get between his enemy and his friend
+* If agent is a coward, he will attempt to put his friend between himself and his enemy
+
+
 ## Simple Economy
 
 [Simple Economy](./simple-economy/simple-economy.png)
