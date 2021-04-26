@@ -6,7 +6,7 @@ Below, my work / progress through the study is documented, newest project to old
 
 ## Job Social Network ABM
 
-[Job Social Network ](./job-social-network/job-social-network.jpg)
+![Job Social Network ](./job-social-network/job-social-network.jpg)
 
 Part of NetLogo training the task was to create a simulation to see what happens in a simple job market.
 
@@ -23,7 +23,7 @@ Part of NetLogo training the task was to create a simulation to see what happens
 
 ## Heroes and Cowards ABM
 
-[Heroes and Cowards ](./heroes-cowards/heroes-cowards.png)
+![Heroes and Cowards ](./heroes-cowards/heroes-cowards.png)
 
 Recreating the Heroes And Cowards Activity as an ABM
 
@@ -35,7 +35,7 @@ Recreating the Heroes And Cowards Activity as an ABM
 
 ## Simple Economy
 
-[Simple Economy](./simple-economy/simple-economy.png)
+![Simple Economy](./simple-economy/simple-economy.png)
 
 Warming up, creating a simple model to understand wealth distribution.
 
@@ -48,7 +48,7 @@ Warming up, creating a simple model to understand wealth distribution.
 
 Simple tutorial following netlogo default tutorial
 
-[Grass Eaters](./grass-eaters/grass-eaters.png)
+![Grass Eaters](./grass-eaters/grass-eaters.png)
 
 * agents move randomly
 * if there's grass, agent eats it to get energy
