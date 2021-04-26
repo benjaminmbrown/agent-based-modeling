@@ -6,7 +6,7 @@ Below, my work / progress through the study is documented, newest project to old
 
 ## Job Social Network ABM
 
-![Job Social Network ](./job-social-network/job-social-network.jpg)
+![Job Social Network ](./job-social-network/job-social-network.png)
 
 Part of NetLogo training the task was to create a simulation to see what happens in a simple job market.
 
