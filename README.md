@@ -3,6 +3,11 @@ Storing work from ABM study from Intro to ABM via Santa Fe Institute.
 
 Below, my work / progress through the study is documented, newest project to oldest from the top.
 
+## El Farol Extended
+![El Farol Model ](./el-farol-extended/el-farol-extended.png)
+
+Extention of the El Farol model to build rewards system and monitoring around the model.
+
 
 ## Job Social Network ABM
 
